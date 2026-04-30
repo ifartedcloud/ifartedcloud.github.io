@@ -1,8 +1,11 @@
 export default function Home() {
   return (
     <div className="page-home">
-      <h1>ifarted.cloud</h1>
-      <p>Something is coming.</p>
+      <img
+        src="/logo.jpeg"
+        alt="I am not a cloud. I am a FART."
+        className="logo"
+      />
     </div>
   )
 }
