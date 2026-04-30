@@ -6,6 +6,7 @@ export default function Home() {
         alt="I am not a cloud. I am a FART."
         className="logo"
       />
+      <p className="tagline">More than a fart. Less than a cloud.</p>
     </div>
   )
 }
