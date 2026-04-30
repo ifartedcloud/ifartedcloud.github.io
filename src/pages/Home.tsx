@@ -1,10 +1,14 @@
+import { playFart } from '../utils/fartSynth'
+
 export default function Home() {
   return (
     <div className="page-home">
       <img
         src="/logo.jpeg"
         alt="I am not a cloud. I am a FART."
-        className="logo"
+        className="logo clickable"
+        onClick={playFart}
+        title="Click me"
       />
       <p className="tagline">More than a fart. Less than a cloud.</p>
     </div>

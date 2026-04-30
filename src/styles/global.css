@@ -30,6 +30,16 @@ body {
   display: block;
 }
 
+.logo.clickable {
+  cursor: pointer;
+  transition: transform 0.08s ease-out;
+  user-select: none;
+}
+
+.logo.clickable:active {
+  transform: scale(0.96);
+}
+
 .tagline {
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 1.1rem;
