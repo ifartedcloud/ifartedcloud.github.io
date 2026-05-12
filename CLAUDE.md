@@ -1,105 +1,137 @@
-# CLAUDE.md — ifarted.cloud
+# ifartedcloud.github.io — Claude Code Context
 
-Claude Code-specific extensions to the cross-tool `AGENTS.md` brief. Read `AGENTS.md` first — this file only covers what is Claude Code-specific.
+## What this repo is
 
-## What ifarted.cloud is
+ifartedcloud.github.io is a static site published via GitHub Pages for the ifartedcloud organization.
 
-A fun, irreverent single-page site. Currently: landing page with logo, tagline, and interactive fart sounds. The site is intentionally simple but built on a proper stack so it can grow.
+---
 
-## SPA
+## ADO project details
 
-Vite 6 + React 19 + TypeScript, deployed to GitHub Pages via GitHub Actions.
+- **ADO org:** https://dev.azure.com/hybridcloudsolutions
+- **ADO project:** iFarted Cloud
+- **Area path:** Platform Engineering\Onboarding
+- **Work item format:** `AB#<id>` in commit messages and PR descriptions
 
-```
-src/
-├── App.tsx              Root component
-├── main.tsx             Entry point (React 19 createRoot)
-├── pages/Home.tsx       Landing page — logo + tagline + click interaction
-├── styles/global.css    All styles
-├── utils/               Client-side utilities (audio synthesis, etc.)
-└── vite-env.d.ts        Vite type reference
-```
+---
 
-**Run locally:** `npm run dev` — starts Vite dev server at `http://localhost:5173/`
-**Build:** `npm run build` — outputs to `dist/`. Runs TypeScript type check. Run before every commit touching `src/`.
-**Deploy:** automatic on push to `main` via `.github/workflows/deploy.yml`
-**Live:** `https://ifarted.cloud/`
+## Standards
 
-## Runtime structure
+This repo follows all HCS platform standards defined in the Platform Engineering repo:
 
-```
-.claude/
-├── agents/           Subagent definitions (YAML frontmatter + procedure)
-├── skills/           Skill folders (SKILL.md)
-├── commands/         Slash command definitions
-├── hooks/            Lifecycle hook scripts
-├── logs/             Operate/token/session logs
-└── settings.json     Claude Code settings (agent teams flag + hooks)
-```
-
-## Subagents
-
-| Agent | Model | Purpose |
-|---|---|---|
-| router | claude-sonnet-4-6 | Classify task into workstream |
-| planner | claude-sonnet-4-6 | Write implementation plan for non-trivial tasks |
-| coder | claude-opus-4-7 | Implement code |
-| reviewer | (different family than coder) | Review — cross-family requirement enforced |
-| documenter | claude-sonnet-4-6 | Write docs, READMEs |
-| test-writer | claude-sonnet-4-6 | Write tests |
-| security-reviewer | claude-opus-4-7 | Security audit |
-| investigator | claude-opus-4-7 | Root cause analysis |
-| operator | claude-opus-4-7 | Infra/deploy changes |
-
-## Hard rules
-
-1. Reviewer model family ≠ coder model family. Non-negotiable.
-2. Max 2 revision rounds before human escalation.
-3. Touching `.env`, `secrets/`, or `permissions/` auto-upgrades to operate workstream.
-4. Stop and summarize at 70–80% of token budget.
-5. No silent additions: call out new deps/files/commands in rationale.
-6. Subagents do not inherit parent skills — preload in frontmatter.
-
-## Style rules
-
-1. No emojis in repo content unless user explicitly requests it.
-2. No filler phrases. Get to work.
-3. No hype words: powerful, seamless, robust, leverage, unlock, game-changing.
-4. Keep it fun where the site content warrants it (this is a fart site).
-5. Don't invent tool or model names. Search before assuming an unfamiliar name is a typo.
-
-## File conventions
-
-| Content type | Location |
+| Standard | Reference |
 |---|---|
-| Page components | `src/pages/` |
-| Reusable components | `src/components/` |
-| Utilities | `src/utils/` |
-| Global styles | `src/styles/global.css` |
-| Static assets | `public/` |
+| Governance | [docs/standards/governance.md](https://dev.azure.com/hybridcloudsolutions/Platform%20Engineering/_git/Platform%20Engineering?path=/docs/standards/governance.md) |
+| Scripting (PowerShell 7) | [docs/standards/scripting.md](https://dev.azure.com/hybridcloudsolutions/Platform%20Engineering/_git/Platform%20Engineering?path=/docs/standards/scripting.md) |
+| Automation | [docs/standards/automation.md](https://dev.azure.com/hybridcloudsolutions/Platform%20Engineering/_git/Platform%20Engineering?path=/docs/standards/automation.md) |
+| Variables and naming | [docs/standards/variables.md](https://dev.azure.com/hybridcloudsolutions/Platform%20Engineering/_git/Platform%20Engineering?path=/docs/standards/variables.md) |
+| Documentation | [docs/standards/documentation.md](https://dev.azure.com/hybridcloudsolutions/Platform%20Engineering/_git/Platform%20Engineering?path=/docs/standards/documentation.md) |
+| Claude Code | [docs/standards/claude-code.md](https://dev.azure.com/hybridcloudsolutions/Platform%20Engineering/_git/Platform%20Engineering?path=/docs/standards/claude-code.md) |
 
-## When to ask vs. when to act
+Key rules:
+- All scripts: PowerShell 7+ only. `#Requires -Version 7.0`, `Set-StrictMode -Version Latest`, ` $ErrorActionPreference = 'Stop'`.
+- All docs: Markdown only. No Word documents in any repo.
+- Commit format: `type(scope): short description` — types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`
+- No secrets, tokens, or credentials committed to any file.
 
-Ask before:
-- Creating a new top-level folder.
-- Renaming or restructuring existing files.
-- Adding new external npm packages.
-- Changing the deployment workflow.
+---
 
-Act without asking:
-- Implementing features in existing pages/utils.
-- Fixing TypeScript errors and lint issues.
-- Updating styles for existing components.
-- Adding `CHANGELOG.md` entries and bumping version when shipping meaningful changes.
+## Key facts
 
-## How to extend
+| Fact | Value |
+|---|---|
+| Primary language | Markdown / HTML |
+| GitHub org | ifartedcloud |
+| Azure login | kris@hybridsolutions.cloud |
+| Key Vault | kv-hcs-vault-01 |
 
-**Add a page:** create `src/pages/<Name>.tsx`, add a route in `App.tsx`.
+### Environment variables expected
 
-**Add a utility:** create `src/utils/<name>.ts` and import where needed.
+| Variable | Source | Purpose |
+|---|---|---|
+| `GITHUB_TOKEN` | kv-hcs-vault-01 via Load-HCSEnvironment.ps1 | GitHub CLI and git operations |
+| `AZURE_DEVOPS_EXT_PAT` | kv-hcs-vault-01 via Load-HCSEnvironment.ps1 | ADO CLI (`az boards`, `az devops`) |
+Load before starting a session:
+```powershell
+. E:\git\platform\scripts\Load-HCSEnvironment.ps1
+```
 
-**Add a component:** create `src/components/<Name>.tsx`.
+### Build and test commands
 
-**Add a workstream agent:** create `.claude/agents/<name>.md`, update AGENTS.md table.
+```
+npm install
+npm run build
+npm run dev
+```
 
-**Add a hook:** create `.claude/hooks/<name>.sh`, `chmod +x` it, register in `.claude/settings.json`.
+---
+
+## Repo structure
+
+```
+ifartedcloud.github.io/
+├── .claude/
+    ├── agents/
+    ├── commands/
+    ├── hooks/
+    ├── skills/
+    └── settings.json
+├── .github/
+    └── workflows/
+├── public/
+    ├── CNAME
+    └── logo.jpeg
+├── src/
+    ├── pages/
+    ├── styles/
+    ├── utils/
+    ├── App.tsx
+    └── main.tsx
+├── .gitignore
+├── AGENTS.md
+├── CLAUDE.md
+├── index.html
+├── package-lock.json
+├── package.json
+├── README.md
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
+```
+
+---
+
+## Claude Code actions
+
+**Run autonomously:**
+- Read, search, and grep any file in this repo
+- Write and edit files in this repo
+- `git add`, `git commit`, `git push`
+- `gh issue`, `gh pr`, `gh run` CLI commands
+- `npm` or `bundle` commands for local preview
+
+**Always confirm before:**
+- Creating or deleting Azure resources
+- Any `az` CLI write operation that modifies Azure state
+- Running destructive operations
+- Making API calls to external services
+
+
+---
+
+## Subagents available in this repo
+
+- `ifartedcloud.github.io-engineer` (model: sonnet) — Expert in `ifartedcloud.github.io`: deep knowledge of this repo's structure, conventions, and development workflow.
+
+User-level agents (available in every repo session): `triage-lookup`, `markdown-prose-editor`, `azurelocal-domain-expert`, `mkdocs-material-doctor`, `turner-module-scaffold-engineer`, `mms-2026-demo-presenter`.
+
+---
+
+## Owner
+
+**Kristopher Turner**
+kris@hybridsolutions.cloud
+Senior Product Technology Architect, TierPoint | Microsoft MVP (Azure) | MCT
+Owner, Hybrid Cloud Solutions LLC — hybridsolutions.cloud
+Country Cloud Boy — thisismydemo.cloud
